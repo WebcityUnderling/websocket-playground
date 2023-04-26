@@ -84,7 +84,7 @@ function messageEveryone(json) {
     })
 }
 
-//simple and quick uuid generator, only for testing and stuff. I found it on  stack overflow
+//simple and quick uuid generator, only for testing and stuff. I found it on stack overflow
 function uuid() {
     var u='',i=0;
     while(i++<36) {

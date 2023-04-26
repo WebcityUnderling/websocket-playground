@@ -2,14 +2,14 @@
 Just a lil experiment, have fun!
 
 ## 1 Setup Server and Client
-npm install those bad bois
+install packages for both ```client``` and ```server``` folders
 
 
 ## 2 Start The Server
-Run the server in debug mode in your IDE
+Run the server using: ```node index.js```
 
 ## 3 Start the client
-npm run dev will do the trick.
+start the client: ```npm run dev```
 
 ## 4 Open many windows
 Open the client in many windows and join the server to see the  magic happen.
