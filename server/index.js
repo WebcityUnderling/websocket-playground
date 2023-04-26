@@ -77,7 +77,7 @@ wsServer.on("request", request => {
 })
 
 
-// HELPER FUN-CTIONS
+// HELPER FUNCTIONS
 function messageEveryone(json) {
     Object.values(connections).forEach(connection => {
         connection.send(JSON.stringify(json))

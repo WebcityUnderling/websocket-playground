@@ -101,7 +101,9 @@ import { _ } from 'lodash'
 
     //Setup Your movement handlers
     function handleOnMove(event) {
-      position.value = { x: event.clientX, y: event.clientY }
+      const xPosition = event.clientX - stage.getBoundingClientRect().x;
+      const yPosition = event.clientY - stage.getBoundingClientRect().y;
+      position.value = { x: xPosition, y: yPosition }
       moveEvent();
     }
 
