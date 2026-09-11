@@ -1,7 +1,8 @@
 <template>
-  <main>
+  <main class="min-h-dvh h-dvh">
+    <Lobby :selectable-avatars="usableAvatars" />
     <!-- Room -->
-    <div v-if="connected" class="room">
+    <!-- <div v-if="connected" class="room">
       <div id="#stage" class="stage">
         <User :name="name" :avatar="avatar" :position="position" />
 
@@ -13,10 +14,10 @@
         />
       </div>
       <button @click="requestClose()">Leave</button>
-    </div>
+    </div> -->
 
     <!-- Landing -->
-    <div v-else class="landing">
+    <!-- <div v-else class="landing">
       <form @submit.prevent="requestJoin()">
         <div>
           <label for="name">Enter you name</label>
@@ -40,18 +41,18 @@
           Join
         </button>
       </form>
-    </div>
+    </div> -->
   </main>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import User from "./components/User.vue";
-import { usableAvatars } from "./utils";
+import Lobby from "./components/Lobby.vue";
+import { usableAvatars } from "./data/avatars.ts";
 import { _ } from "lodash";
 
 //connection
-let ws = null;
+let socket = null;
 let connected = ref(false);
 
 //client info
@@ -69,27 +70,19 @@ let friends = ref([]);
 const avatarOptions = usableAvatars;
 
 //handle connection requests
-function requestJoin() {
-  const requestParams = new URLSearchParams({
-    name: name,
-    avatar: avatar.value,
-  });
-  ws = new WebSocket(`ws://localhost:8080/?${requestParams.toString()}`);
-  ws.onopen = handleOnOpen;
-  ws.onmessage = handleOnMessage;
-}
+function requestJoin() {}
 
 function requestClose() {
-  if (ws) {
-    ws.close();
+  if (socket) {
+    socket.close();
     connected.value = false;
-    ws = null;
+    socket = null;
   }
 }
 
 // websocket event handlers
 function handleOnOpen() {
-  if (ws) {
+  if (socket) {
     connected.value = true;
     setTimeout(() => {
       stage = document.querySelector(".stage");
@@ -99,7 +92,7 @@ function handleOnOpen() {
 }
 
 function handleOnMessage(event) {
-  if (ws) {
+  if (socket) {
     const payload = JSON.parse(event.data);
 
     if (payload.action === "join") handleActionJoin(payload);
@@ -118,7 +111,7 @@ function handleOnMove(event) {
 }
 
 const moveEvent = _.throttle(function () {
-  ws.send(
+  socket.send(
     JSON.stringify({
       action: "user_update",
       from: clientID.value,
@@ -159,14 +152,3 @@ function handleActionUserMove(event) {
   }
 } //when someone's position changed on the server
 </script>
-
-<style>
-.stage {
-  width: 600px;
-  height: 600px;
-  background: #525252;
-  border: 1px solid #999;
-  cursor: none;
-  overflow: hidden;
-}
-</style>

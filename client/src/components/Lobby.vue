@@ -1,0 +1,95 @@
+<template>
+  <div class="container h-full flex justify-center items-center">
+    <div
+      class="max-w-125 w-full my-16 theme-light border border-(--theme-bg-complement) rounded-lg"
+    >
+      <h1
+        class="text-xs font-bold px-8 py-3 border-b border-(--theme-bg-complement)"
+      >
+        Enter details
+      </h1>
+      <form
+        action=""
+        v-on:submit.prevent="(e) => handleLobbySubmission(e)"
+        class="space-y-6 p-8"
+      >
+        <Input
+          v-model="roomCode"
+          name="roomCode"
+          label="Room Code"
+          id="lobby-code"
+          required
+        />
+
+        <Input
+          name="name"
+          v-model="name"
+          label="Name"
+          id="lobby-name-select"
+          required
+        />
+
+        <InputGroup label="Choose avatar" id="avatar" fieldset required>
+          <div class="flex gap-1 justify-between">
+            <RadioButton
+              v-for="(avatar, i) in selectableAvatars"
+              :required="i === 0"
+              :id="`avatar-${i}`"
+              :label="avatar.icon"
+              :value="avatar.alias"
+              name="avatar"
+              v-model="selectedAvatar"
+            />
+          </div>
+        </InputGroup>
+        <div
+          v-if="lobbyErrors.length"
+          role="alert"
+          class="p-3 border border-red bg-red/10 rounded-sm text-base02"
+        >
+          <p v-for="error in lobbyErrors">{{ error }}</p>
+        </div>
+        <button
+          type="submit"
+          class="text-lg font-medium p-2 leding-none rounded-sm bg-(--theme-bg-complement) interactive w-full text-center"
+        >
+          Enter
+        </button>
+      </form>
+    </div>
+  </div>
+</template>
+<script setup lang="ts">
+import Input from "./Input.vue";
+import InputGroup from "./InputGroup.vue";
+import RadioButton from "./RadioButton.vue";
+import type { Avatar } from "../data/avatars";
+import { ref } from "vue";
+
+const props = defineProps<{
+  selectableAvatars: readonly Avatar[];
+}>();
+
+const roomCode = ref("");
+const name = ref("");
+const selectedAvatar = ref<string>();
+
+const lobbyErrors = ref<string[]>([]);
+
+const errorLib = {
+  empty: "Please fill out all inputs before joining a room",
+};
+
+const handleLobbySubmission = (e: SubmitEvent) => {
+  lobbyErrors.value = [];
+  const data = [roomCode, name, selectedAvatar];
+
+  if (data.filter((o) => o.value == undefined || o.value == "").length) {
+    lobbyErrors.value.push(errorLib.empty);
+  }
+};
+
+const escapeName = (name: string): string => {
+  return name;
+};
+</script>
