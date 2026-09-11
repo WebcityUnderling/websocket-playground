@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@utility interactive {
+  @apply cursor-pointer disabled:cursor-not-allowed;
+}
