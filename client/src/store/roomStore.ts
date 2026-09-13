@@ -3,7 +3,7 @@ import { connect, disconnect } from "../services/roomConnection";
 import type { JoinDetails } from "../services/roomConnection";
 
 interface RoomState {
-  status: "disconnected" | "connecting" | "joined" | "error";
+  status: "disconnected" | "joined" | "error";
   error: null | string;
 }
 
@@ -20,10 +20,8 @@ export const useRoomStore = defineStore("room", {
       connection.onmessage = (event) => {
         const message = JSON.parse(event.data);
         const { success, error } = message.content;
-        if (success) {
-          this.status = "joined";
-        }
-        this.error = error ?? null;
+        if (success) this.status = "joined";
+        if (error) this.error = error;
       };
     },
     leaveRoom() {

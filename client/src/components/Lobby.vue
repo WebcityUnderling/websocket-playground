@@ -20,6 +20,7 @@
           label="Room Code"
           id="lobby-code"
           required
+          value="MEGAPORT"
         />
 
         <Input
@@ -27,6 +28,7 @@
           v-model="name"
           label="Name"
           id="lobby-name-select"
+          value="Sarah"
           required
         />
 
@@ -35,6 +37,7 @@
             <RadioButton
               v-for="(avatar, i) in selectableAvatars"
               :required="i === 0"
+              :checked="i === 0"
               :id="`avatar-${i}`"
               :label="avatar.icon"
               :value="avatar.alias"
@@ -44,18 +47,15 @@
           </div>
         </InputGroup>
         <div
-          v-if="lobbyErrors.length"
+          v-if="lobbyErrors.length || roomStore.error"
           role="alert"
-          class="p-3 border border-red bg-red/10 rounded-sm text-base02"
+          class="callout border-red bg-red/10 text-base02"
         >
           <p v-for="error in lobbyErrors">{{ error }}</p>
+          <p v-if="roomStore.error">{{ roomStore.error }}</p>
         </div>
-        <button
-          type="submit"
-          class="text-lg font-medium p-2 leding-none rounded-sm bg-(--theme-bg-complement) interactive w-full text-center"
-        >
-          Enter
-        </button>
+
+        <Submit>Enter</Submit>
       </form>
     </div>
   </div>
@@ -64,6 +64,7 @@
 import Input from "./Input.vue";
 import InputGroup from "./InputGroup.vue";
 import RadioButton from "./RadioButton.vue";
+import Submit from "./Submit.vue";
 import type { Avatar } from "../data/avatars";
 import { ref } from "vue";
 import { useRoomStore } from "../store/roomStore.ts";

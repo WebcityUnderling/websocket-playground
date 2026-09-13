@@ -1,22 +1,19 @@
 <template>
   <div class="container h-full flex justify-center items-center">
     <div
-      class="max-w-125 w-full my-16 theme-light border border-(--theme-bg-complement) rounded-lg"
+      class="max-w-125 w-full my-16 theme-light border border-(--theme-bg-complement) rounded-lg p-8 space-y-5"
     >
-      <h1>You entered a room!</h1>
+      <Stage />
       <form v-on:submit.prevent="handleClose()">
-        <button
-          type="submit"
-          class="text-lg font-medium p-2 leding-none rounded-sm bg-(--theme-bg-complement) interactive w-full text-center"
-        >
-          Leave
-        </button>
+        <Submit>Leave</Submit>
       </form>
     </div>
   </div>
 </template>
 <script setup>
 import { useRoomStore } from "../store/roomStore";
+import Submit from "./Submit.vue";
+import Stage from "./Stage.vue";
 
 const roomStore = useRoomStore();
 

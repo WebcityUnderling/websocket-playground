@@ -12,7 +12,6 @@ import {
 import {
   createSession,
   getSession,
-  getSessions,
   removeSession,
   updateSessionStatus,
 } from "./sessions";
@@ -72,7 +71,10 @@ function handleJoin(id: string, payload: JoinMessage) {
     );
     // Broadcast join to other connections
   } else {
-    errorMessageConnection("Incorrect room code", session.connection);
+    errorMessageConnection(
+      "Enter a valid room code to continue.",
+      session.connection,
+    );
     session?.connection.close();
   }
 }

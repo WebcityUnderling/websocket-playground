@@ -1,9 +1,11 @@
 <template>
   <main class="min-h-dvh h-dvh">
-    <Lobby
-      v-if="roomStore.status != 'joined'"
-      :selectable-avatars="usableAvatars"
-    />
+    <KeepAlive>
+      <Lobby
+        v-if="roomStore.status != 'joined'"
+        :selectable-avatars="usableAvatars"
+      />
+    </KeepAlive>
     <Room v-if="roomStore.status == 'joined'">You got in!</Room>
     <!-- Room -->
     <!-- <div v-if="connected" class="room">
