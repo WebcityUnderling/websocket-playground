@@ -1,6 +1,10 @@
 <template>
   <main class="min-h-dvh h-dvh">
-    <Lobby :selectable-avatars="usableAvatars" />
+    <Lobby
+      v-if="roomStore.status != 'joined'"
+      :selectable-avatars="usableAvatars"
+    />
+    <Room v-if="roomStore.status == 'joined'">You got in!</Room>
     <!-- Room -->
     <!-- <div v-if="connected" class="room">
       <div id="#stage" class="stage">
@@ -15,45 +19,19 @@
       </div>
       <button @click="requestClose()">Leave</button>
     </div> -->
-
-    <!-- Landing -->
-    <!-- <div v-else class="landing">
-      <form @submit.prevent="requestJoin()">
-        <div>
-          <label for="name">Enter you name</label>
-          <input v-model="name" id="name" type="text" required />
-        </div>
-        <div>
-          <h2>Choose Avatar:</h2>
-          <div class="buttons">
-            <button
-              v-for="button in avatarOptions"
-              @click="avatar = button.alias"
-              type="button"
-              :disabled="button.alias == avatar ? true : false"
-            >
-              {{ button.icon }}
-            </button>
-          </div>
-        </div>
-
-        <button type="submit" :disabled="!name || !avatar ? true : false">
-          Join
-        </button>
-      </form>
-    </div> -->
   </main>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import Lobby from "./components/Lobby.vue";
+import Room from "./components/Room.vue";
 import { usableAvatars } from "./data/avatars.ts";
+import { useRoomStore } from "./store/roomStore.ts";
+
 import { _ } from "lodash";
 
-//connection
-let socket = null;
-let connected = ref(false);
+const roomStore = useRoomStore();
 
 //client info
 let clientID = ref(null);
@@ -69,25 +47,11 @@ let stage = null;
 let friends = ref([]);
 const avatarOptions = usableAvatars;
 
-//handle connection requests
-function requestJoin() {}
-
 function requestClose() {
   if (socket) {
     socket.close();
     connected.value = false;
     socket = null;
-  }
-}
-
-// websocket event handlers
-function handleOnOpen() {
-  if (socket) {
-    connected.value = true;
-    setTimeout(() => {
-      stage = document.querySelector(".stage");
-      stage.addEventListener("mousemove", handleOnMove);
-    }, 0);
   }
 }
 

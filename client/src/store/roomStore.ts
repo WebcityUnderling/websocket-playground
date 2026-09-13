@@ -1,14 +1,15 @@
 import { defineStore } from "pinia";
-import { connect } from "../services/roomConnection";
+import { connect, disconnect } from "../services/roomConnection";
 import type { JoinDetails } from "../services/roomConnection";
 
 interface RoomState {
-  status: "disconnected" | "connecting" | "joining" | "joined" | "error";
+  status: "disconnected" | "connecting" | "joined" | "error";
   error: null | string;
 }
 
 export const useRoomStore = defineStore("room", {
   state: (): RoomState => ({ status: "disconnected", error: null }),
+
   actions: {
     joinRoom(details: JoinDetails) {
       this.status = "connecting";
@@ -18,12 +19,16 @@ export const useRoomStore = defineStore("room", {
 
       connection.onmessage = (event) => {
         const message = JSON.parse(event.data);
-
-        if (message.action === "join") {
+        const { success, error } = message.content;
+        if (success) {
           this.status = "joined";
-          // Store the returned user ID and room data here.
         }
+        this.error = error ?? null;
       };
+    },
+    leaveRoom() {
+      this.status = "disconnected";
+      disconnect();
     },
   },
 });

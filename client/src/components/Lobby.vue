@@ -15,6 +15,7 @@
       >
         <Input
           v-model="roomCode"
+          type="password"
           name="roomCode"
           label="Room Code"
           id="lobby-code"
@@ -65,6 +66,9 @@ import InputGroup from "./InputGroup.vue";
 import RadioButton from "./RadioButton.vue";
 import type { Avatar } from "../data/avatars";
 import { ref } from "vue";
+import { useRoomStore } from "../store/roomStore.ts";
+
+const roomStore = useRoomStore();
 
 const props = defineProps<{
   selectableAvatars: readonly Avatar[];
@@ -82,14 +86,17 @@ const errorLib = {
 
 const handleLobbySubmission = (e: SubmitEvent) => {
   lobbyErrors.value = [];
-  const data = [roomCode, name, selectedAvatar];
+  const body = {
+    roomCode: roomCode.value,
+    name: name.value,
+    selectedAvatar: selectedAvatar.value,
+  };
 
-  if (data.filter((o) => o.value == undefined || o.value == "").length) {
+  if (Object.entries(body).filter((o) => o == undefined || o == "").length) {
     lobbyErrors.value.push(errorLib.empty);
+    return;
   }
-};
 
-const escapeName = (name: string): string => {
-  return name;
+  roomStore.joinRoom(body);
 };
 </script>
