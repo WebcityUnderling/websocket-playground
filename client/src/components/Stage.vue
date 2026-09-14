@@ -2,8 +2,6 @@
   <div
     ref="stage"
     class="relative w-full pt-[100%] overflow-hidden bg-(--theme-bg-complement) cursor-none"
-    @mouseenter="cursorVisible = true"
-    @mouseleave="cursorVisible = false"
   >
     <!-- Other sessions use the latest positions received from the server. -->
     <UserDisplay
@@ -19,7 +17,7 @@
 
     <!-- Display Client Cursor -->
     <UserDisplay
-      v-show="cursorVisible"
+      current-user
       :name="roomStore.userData?.name"
       :avatar="roomStore.userData?.avatar"
       aria-hidden="true"
@@ -41,7 +39,6 @@ import { broadcastCoords } from "../services/roomConnection.ts";
 import { throttle } from "lodash";
 
 const stage = ref<HTMLDivElement | null>(null);
-const cursorVisible = ref(false);
 const position = ref({ x: 0, y: 0 });
 const roomStore = useRoomStore();
 const otherSessions = computed(() =>
@@ -83,7 +80,7 @@ onMounted(() => {
   });
 });
 
-const sendPosition = throttle(broadcastCoords, 50);
+const sendPosition = throttle(broadcastCoords, 20);
 
 onUnmounted(() => {
   unsubscribe?.();

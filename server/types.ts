@@ -7,8 +7,6 @@ export interface Client {
   position: Position;
 }
 
-export type Clients = Record<string, Client>;
-
 export type SessionStatus = "pending" | "joined";
 
 export interface Session {

@@ -2,7 +2,7 @@ import * as http from "node:http";
 import { randomUUID } from "node:crypto";
 import { server as WebSocketServer } from "websocket";
 
-import type { ClientMessage, Position } from "../shared/messages";
+import type { ClientMessage } from "../shared/messages";
 
 import {
   broadcastSessionChanges,
@@ -27,7 +27,7 @@ const httpServer = http.createServer();
 const wsServer = new WebSocketServer({
   httpServer: httpServer,
 });
-const broadcastTimer = setInterval(broadcastSessionChanges, 10);
+const broadcastTimer = setInterval(broadcastSessionChanges, 20);
 broadcastTimer.unref();
 httpServer.on("close", () => clearInterval(broadcastTimer));
 httpServer.listen(8080);

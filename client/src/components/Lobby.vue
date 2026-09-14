@@ -83,7 +83,7 @@ const errorLib = {
   empty: "Please fill out all inputs before joining a room",
 };
 
-const handleLobbySubmission = (e: SubmitEvent) => {
+const handleLobbySubmission = () => {
   lobbyErrors.value = [];
   const body = {
     roomCode: roomCode.value,

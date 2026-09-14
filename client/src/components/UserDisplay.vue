@@ -6,7 +6,8 @@
     </div>
     <!-- Name -->
     <span
-      class="bg-(--theme-bg) border text-ellipsis overflow-hidden whitespace-nowrap max-w-32 border-current/30 block shadow-sm rounded-sm text-xs font-medium p-1"
+      :class="currentUser && 'bg-blue text-base3'"
+      class="bg-(--theme-bg) leading-tighter border text-ellipsis overflow-hidden whitespace-nowrap max-w-32 border-current/30 block shadow-sm rounded-sm text-xs font-medium p-1"
       >{{ name }}</span
     >
   </div>
@@ -15,5 +16,6 @@
 defineProps<{
   name?: string | null;
   avatar?: string | null;
+  currentUser?: boolean;
 }>();
 </script>

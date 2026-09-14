@@ -33,5 +33,4 @@ export type BroadcastMessage =
         sessions: BroadcastableSessions;
       };
     }
-  | { action: "user_error"; content: { success: false; error: string } }
-  | { action: "sessions_positions"; content: Record<string, Position> };
+  | { action: "user_error"; content: { success: false; error: string } };
