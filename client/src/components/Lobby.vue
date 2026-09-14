@@ -20,7 +20,6 @@
           label="Room Code"
           id="lobby-code"
           required
-          value="MEGAPORT"
         />
 
         <Input
@@ -28,7 +27,6 @@
           v-model="name"
           label="Name"
           id="lobby-name-select"
-          value="Sarah"
           required
         />
 
@@ -37,7 +35,6 @@
             <RadioButton
               v-for="(avatar, i) in selectableAvatars"
               :required="i === 0"
-              :checked="i === 0"
               :id="`avatar-${i}`"
               :label="avatar.icon"
               :value="avatar.alias"
@@ -49,7 +46,7 @@
         <div
           v-if="lobbyErrors.length || roomStore.error"
           role="alert"
-          class="callout border-red bg-red/10 text-base02"
+          class="callout border-red bg-red/5 text-red font-semibold"
         >
           <p v-for="error in lobbyErrors">{{ error }}</p>
           <p v-if="roomStore.error">{{ roomStore.error }}</p>
@@ -68,6 +65,7 @@ import Submit from "./Submit.vue";
 import type { Avatar } from "../data/avatars";
 import { ref } from "vue";
 import { useRoomStore } from "../store/roomStore.ts";
+import type { JoinDetails } from "../../../shared/messages";
 
 const roomStore = useRoomStore();
 
@@ -90,14 +88,14 @@ const handleLobbySubmission = (e: SubmitEvent) => {
   const body = {
     roomCode: roomCode.value,
     name: name.value,
-    selectedAvatar: selectedAvatar.value,
+    avatar: selectedAvatar.value,
   };
 
-  if (Object.entries(body).filter((o) => o == undefined || o == "").length) {
+  if (Object.values(body).some((v) => v === undefined || v === "")) {
     lobbyErrors.value.push(errorLib.empty);
     return;
   }
 
-  roomStore.joinRoom(body);
+  roomStore.joinRoom(body as JoinDetails);
 };
 </script>

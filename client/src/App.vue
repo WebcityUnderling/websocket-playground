@@ -6,21 +6,7 @@
         :selectable-avatars="usableAvatars"
       />
     </KeepAlive>
-    <Room v-if="roomStore.status == 'joined'">You got in!</Room>
-    <!-- Room -->
-    <!-- <div v-if="connected" class="room">
-      <div id="#stage" class="stage">
-        <User :name="name" :avatar="avatar" :position="position" />
-
-        <User
-          v-for="friend in friends"
-          :name="friend.name"
-          :avatar="friend.avatar"
-          :position="friend.position"
-        />
-      </div>
-      <button @click="requestClose()">Leave</button>
-    </div> -->
+    <Room v-if="roomStore.status == 'joined'" />
   </main>
 </template>
 
@@ -75,21 +61,6 @@ function handleOnMove(event) {
   position.value = { x: xPosition, y: yPosition };
   moveEvent();
 }
-
-const moveEvent = _.throttle(function () {
-  socket.send(
-    JSON.stringify({
-      action: "user_update",
-      from: clientID.value,
-      content: {
-        position: {
-          x: position.value.x,
-          y: position.value.y,
-        },
-      },
-    }),
-  );
-}, 25);
 
 // Mesage action handlers
 function handleActionJoin(event) {

@@ -1,6 +1,10 @@
-import { BroadcastMessage } from "./types";
+import type { BroadcastMessage } from "../shared/messages";
 import { type connection } from "websocket";
-import { getSessions } from "./sessions";
+import {
+  getSessions,
+  consumeSessionsChanged,
+  formatBroadcastableSessions,
+} from "./sessions";
 
 export const messageConnection = (
   message: BroadcastMessage,
@@ -26,8 +30,18 @@ export const errorMessageConnection = (
 };
 
 export const messageAllSessions = (message: BroadcastMessage) => {
-  const sessions = getSessions();
-  Object.values(sessions).forEach((session) => {
-    messageConnection(message, session.connection);
+  const serialized = JSON.stringify(message);
+  for (const session of Object.values(getSessions())) {
+    if (session.status === "joined" && session.connection.connected) {
+      session.connection.send(serialized);
+    }
+  }
+};
+
+export const broadcastSessionChanges = () => {
+  if (!consumeSessionsChanged()) return;
+  messageAllSessions({
+    action: "sessions_update",
+    content: formatBroadcastableSessions(),
   });
 };

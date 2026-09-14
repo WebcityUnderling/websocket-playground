@@ -2,9 +2,10 @@ import * as http from "node:http";
 import { randomUUID } from "node:crypto";
 import { server as WebSocketServer } from "websocket";
 
-import { ClientMessage } from "./types";
+import type { ClientMessage, Position } from "../shared/messages";
 
 import {
+  broadcastSessionChanges,
   errorMessageConnection,
   messageAllSessions,
   messageConnection,
@@ -14,6 +15,9 @@ import {
   getSession,
   removeSession,
   updateSessionStatus,
+  initSessionClient,
+  updateSessionPosition,
+  formatBroadcastableSessions,
 } from "./sessions";
 
 const ROOMCODE = "MEGAPORT";
@@ -23,6 +27,9 @@ const httpServer = http.createServer();
 const wsServer = new WebSocketServer({
   httpServer: httpServer,
 });
+const broadcastTimer = setInterval(broadcastSessionChanges, 10);
+broadcastTimer.unref();
+httpServer.on("close", () => clearInterval(broadcastTimer));
 httpServer.listen(8080);
 
 // Websocket connections
@@ -45,6 +52,9 @@ wsServer.on("request", (request) => {
     if (payload.action === "join") {
       handleJoin(id, payload);
     }
+    if (payload.action === "update") {
+      handleUpdate(id, payload);
+    }
     // other actions here
   });
 
@@ -54,6 +64,7 @@ wsServer.on("request", (request) => {
 });
 
 type JoinMessage = Extract<ClientMessage, { action: "join" }>;
+type UpdateMessage = Extract<ClientMessage, { action: "update" }>;
 
 function handleJoin(id: string, payload: JoinMessage) {
   const { content } = payload;
@@ -65,8 +76,20 @@ function handleJoin(id: string, payload: JoinMessage) {
     if (session.status === "joined") return;
 
     updateSessionStatus(id, "joined");
+    initSessionClient(id, {
+      name: content.name,
+      avatar: content.avatar,
+      position: { x: 0, y: 0 },
+    });
     messageConnection(
-      { action: "user_join", content: { success: true } },
+      {
+        action: "user_join",
+        content: {
+          success: true,
+          broadcast_id: session.broadcast_id,
+          sessions: formatBroadcastableSessions(),
+        },
+      },
       session.connection,
     );
     // Broadcast join to other connections
@@ -79,14 +102,21 @@ function handleJoin(id: string, payload: JoinMessage) {
   }
 }
 
+function handleUpdate(id: string, payload: UpdateMessage) {
+  const session = getSession(id);
+
+  if (!session) return;
+  updateSessionPosition(id, payload.content);
+}
+
 function handleClose(id: string) {
   const session = getSession(id);
+  removeSession(id);
   if (session && session?.status == "joined") {
     messageAllSessions({
       action: "user_remove",
-      from: id,
-      content: id,
+      from: session.broadcast_id,
+      content: session.broadcast_id,
     });
-    removeSession(id);
   }
 }

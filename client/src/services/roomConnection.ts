@@ -1,8 +1,8 @@
-export interface JoinDetails {
-  roomCode: string;
-  name: string;
-  avatar: string;
-}
+import type {
+  ClientMessage,
+  JoinDetails,
+  Position,
+} from "../../../shared/messages";
 
 let socket: WebSocket | null = null;
 
@@ -11,15 +11,19 @@ export function connect(details: JoinDetails) {
   socket = connection;
 
   connection.onopen = () => {
-    connection.send(
-      JSON.stringify({
-        action: "join",
-        content: details,
-      }),
-    );
+    const payload: ClientMessage = { action: "join", content: details };
+    connection.send(JSON.stringify(payload));
   };
 
   return connection;
+}
+
+export function broadcastCoords(position: Position) {
+  message({ action: "update", content: position });
+}
+
+export function message(payload: ClientMessage) {
+  socket?.send(JSON.stringify(payload));
 }
 
 export function disconnect() {
