@@ -15,6 +15,7 @@
       >
         <Input
           v-model="roomCode"
+          type="password"
           name="roomCode"
           label="Room Code"
           id="lobby-code"
@@ -43,18 +44,15 @@
           </div>
         </InputGroup>
         <div
-          v-if="lobbyErrors.length"
+          v-if="lobbyErrors.length || roomStore.error"
           role="alert"
-          class="p-3 border border-red bg-red/10 rounded-sm text-base02"
+          class="callout border-red bg-red/5 text-red font-semibold"
         >
           <p v-for="error in lobbyErrors">{{ error }}</p>
+          <p v-if="roomStore.error">{{ roomStore.error }}</p>
         </div>
-        <button
-          type="submit"
-          class="text-lg font-medium p-2 leding-none rounded-sm bg-(--theme-bg-complement) interactive w-full text-center"
-        >
-          Enter
-        </button>
+
+        <Submit>Enter</Submit>
       </form>
     </div>
   </div>
@@ -63,8 +61,13 @@
 import Input from "./Input.vue";
 import InputGroup from "./InputGroup.vue";
 import RadioButton from "./RadioButton.vue";
+import Submit from "./Submit.vue";
 import type { Avatar } from "../data/avatars";
 import { ref } from "vue";
+import { useRoomStore } from "../store/roomStore.ts";
+import type { JoinDetails } from "../../../shared/messages";
+
+const roomStore = useRoomStore();
 
 const props = defineProps<{
   selectableAvatars: readonly Avatar[];
@@ -80,16 +83,19 @@ const errorLib = {
   empty: "Please fill out all inputs before joining a room",
 };
 
-const handleLobbySubmission = (e: SubmitEvent) => {
+const handleLobbySubmission = () => {
   lobbyErrors.value = [];
-  const data = [roomCode, name, selectedAvatar];
+  const body = {
+    roomCode: roomCode.value,
+    name: name.value,
+    avatar: selectedAvatar.value,
+  };
 
-  if (data.filter((o) => o.value == undefined || o.value == "").length) {
+  if (Object.values(body).some((v) => v === undefined || v === "")) {
     lobbyErrors.value.push(errorLib.empty);
+    return;
   }
-};
 
-const escapeName = (name: string): string => {
-  return name;
+  roomStore.joinRoom(body as JoinDetails);
 };
 </script>

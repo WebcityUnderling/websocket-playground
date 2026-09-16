@@ -64,22 +64,25 @@ body {
   outline-width: 4px;
 }
 
-@utility theme-dark {
+/* @utility theme-dark {
+  --theme-bg: theme("colors.base03");
   --theme-bg-complement: theme("colors.base02");
   --theme-color-complement: theme("colors.base0");
   color-scheme: dark;
-  background: theme("colors.base03");
+  background: var(--theme-bg);
   color: theme("colors.base1");
   & * {
     outline-color: theme("colors.magenta") !important;
   }
-}
+} */
+/* Haven't optimised design for dark mode */
 
 @utility theme-light {
+  --theme-bg: theme("colors.base3");
   --theme-bg-complement: theme("colors.base2");
   --theme-color-complement: theme("colors.base00");
   color-scheme: light;
-  background: theme("colors.base3");
+  background: var(--theme-bg);
   color: theme("colors.base01");
   & * {
     outline-color: theme("colors.magenta") !important;
@@ -107,4 +110,8 @@ body {
   max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
+}
+
+@utility callout {
+  @apply p-3 border rounded-sm;
 }
